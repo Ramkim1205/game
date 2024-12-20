@@ -70,9 +70,9 @@ function handleTileClick(event) {
             firstTile.matched = true;
             secondTile.matched = true;
 
-            // 두 타일 제거
-            document.querySelector(`[data-row='${selectedTile.row}'][data-col='${selectedTile.col}']`).style.backgroundColor = "green";
-            clickedTile.style.backgroundColor = "green";
+            // 두 타일 제거 (배경색으로 변경)
+            document.querySelector(`[data-row='${selectedTile.row}'][data-col='${selectedTile.col}']`).style.backgroundColor = "";
+            clickedTile.style.backgroundColor = "";
 
             // 선택 초기화
             selectedTile = null;
