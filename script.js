@@ -1,4 +1,4 @@
-// 게임 상태 초기화
+// 게임 상태 초기화 (전역 변수로 선언)
 let currentPos = { x: 3, y: 0 }; // 블록이 시작되는 위치
 let currentTetromino = tetrominoes[0]; // 기본적으로 T형 블록
 
