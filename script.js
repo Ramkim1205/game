@@ -60,16 +60,29 @@ function updateScore() {
 
 // 테트로미노 그리기
 function drawTetromino() {
-    for (let row = 0; row < currentTetromino.shape.length; row++) {
-        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
-            if (currentTetromino.shape[row][col] === 1) {
-                board[currentPos.y + row][currentPos.x + col] = 1;
-                // 블록에 색상 적용
-                document.getElementById("board").children[(currentPos.y + row) * cols + (currentPos.x + col)].style.backgroundColor = currentTetromino.color;
+    // 기존 board를 모두 비웁니다
+    const boardElement = document.getElementById("board");
+    boardElement.innerHTML = ''; // 이전에 그린 보드를 지웁니다
+
+    // board 배열을 참조하면서 각 블록에 색상을 적용합니다
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const block = document.createElement("div");
+            block.classList.add("block");
+
+            // board 배열에서 1이면 색상 적용
+            if (board[row][col] === 1) {
+                // 현재 블록의 색상 적용
+                block.style.backgroundColor = currentTetromino.color;
             }
+
+            // boardElement에 블록 추가
+            boardElement.appendChild(block);
         }
     }
-    drawBoard(); // 보드 그리기
+
+    // 점수 업데이트 및 게임 상태 다시 그리기
+    updateScore();
 }
 
 // 블록을 한 칸 내려주는 함수
