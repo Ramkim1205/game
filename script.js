@@ -1,15 +1,14 @@
-// 테트리스 블록 모양들을 정의
 const tetrominoes = [
-    [[1, 1, 1], [0, 1, 0]], // T형 블록
-    [[1, 1], [1, 1]], // O형 블록
-    [[1, 1, 0], [0, 1, 1]], // S형 블록
-    [[0, 1, 1], [1, 1, 0]], // Z형 블록
-    [[1, 0, 0], [1, 1, 1]], // L형 블록
-    [[0, 0, 1], [1, 1, 1]], // J형 블록
-    [[1, 1, 1, 1]] // I형 블록
+    { shape: [[1, 1, 1], [0, 1, 0]], color: 'blue' }, // T형 블록
+    { shape: [[1, 1], [1, 1]], color: 'yellow' }, // O형 블록
+    { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' }, // S형 블록
+    { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' }, // Z형 블록
+    { shape: [[1, 0, 0], [1, 1, 1]], color: 'orange' }, // L형 블록
+    { shape: [[0, 0, 1], [1, 1, 1]], color: 'cyan' }, // J형 블록
+    { shape: [[1, 1, 1, 1]], color: 'purple' } // I형 블록
 ];
 
-// 게임 상태 초기화
+// 초기화
 let currentPos = { x: 3, y: 0 }; // 블록이 시작되는 위치
 let currentTetromino = tetrominoes[0]; // 기본적으로 T형 블록
 
@@ -46,7 +45,7 @@ function drawBoard() {
             const block = document.createElement("div");
             block.classList.add("block");
             if (board[row][col] === 1) {
-                block.style.backgroundColor = 'blue'; // 블록이 있으면 파란색으로 표시
+                block.style.backgroundColor = 'blue'; // 기본 색상
             }
             boardElement.appendChild(block);
         }
@@ -61,10 +60,12 @@ function updateScore() {
 
 // 테트로미노 그리기
 function drawTetromino() {
-    for (let row = 0; row < currentTetromino.length; row++) {
-        for (let col = 0; col < currentTetromino[row].length; col++) {
-            if (currentTetromino[row][col] === 1) {
+    for (let row = 0; row < currentTetromino.shape.length; row++) {
+        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
+            if (currentTetromino.shape[row][col] === 1) {
                 board[currentPos.y + row][currentPos.x + col] = 1;
+                // 블록에 색상 적용
+                document.getElementById("board").children[(currentPos.y + row) * cols + (currentPos.x + col)].style.backgroundColor = currentTetromino.color;
             }
         }
     }
@@ -84,9 +85,9 @@ function moveTetrominoDown() {
 
 // 충돌 체크 함수
 function isCollision() {
-    for (let row = 0; row < currentTetromino.length; row++) {
-        for (let col = 0; col < currentTetromino[row].length; col++) {
-            if (currentTetromino[row][col] === 1) {
+    for (let row = 0; row < currentTetromino.shape.length; row++) {
+        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
+            if (currentTetromino.shape[row][col] === 1) {
                 if (
                     currentPos.y + row >= rows ||
                     currentPos.x + col < 0 ||
@@ -103,9 +104,9 @@ function isCollision() {
 
 // 블록 고정 함수
 function fixTetromino() {
-    for (let row = 0; row < currentTetromino.length; row++) {
-        for (let col = 0; col < currentTetromino[row].length; col++) {
-            if (currentTetromino[row][col] === 1) {
+    for (let row = 0; row < currentTetromino.shape.length; row++) {
+        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
+            if (currentTetromino.shape[row][col] === 1) {
                 board[currentPos.y + row][currentPos.x + col] = 1;
             }
         }
@@ -154,13 +155,13 @@ function moveTetrominoRight() {
 
 // 블록 회전
 function rotateTetromino() {
-    const rotatedTetromino = currentTetromino[0].map((_, index) =>
-        currentTetromino.map(row => row[index])
+    const rotatedTetromino = currentTetromino.shape[0].map((_, index) =>
+        currentTetromino.shape.map(row => row[index])
     ).reverse();
 
-    currentTetromino = rotatedTetromino;
+    currentTetromino.shape = rotatedTetromino;
     if (isCollision()) {
-        currentTetromino = rotatedTetromino.reverse(); // 회전 불가하면 원래 모양으로 되돌림
+        currentTetromino.shape = rotatedTetromino.reverse(); // 회전 불가하면 원래 모양으로 되돌림
     }
     drawTetromino();
 }
