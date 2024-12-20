@@ -87,7 +87,7 @@ function drawTetromino() {
 
 // 블록을 한 칸 내려주는 함수
 function moveTetrominoDown() {
-    currentPos.y++; // y값 증가
+    currentPos.y++; // y값 증가 (블록이 내려가도록)
 
     // 충돌이 발생하면 고정하고 새 블록 생성
     if (isCollision() || checkGameOver()) {
