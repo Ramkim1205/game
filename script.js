@@ -10,8 +10,8 @@ const tetrominoes = [
 ];
 
 // 게임 상태 초기화
+let currentTetromino = { shape: [], color: '' }; // 색상을 고정하기 위해 초기화
 let currentPos = { x: 3, y: 0 }; // 블록이 시작되는 위치
-let currentTetromino = tetrominoes[0]; // 기본적으로 T형 블록
 
 let gameStarted = false;
 let score = 0;
@@ -34,7 +34,10 @@ document.getElementById('start-button').addEventListener('click', () => {
 
 // 게임 시작 함수
 function startGame() {
+    currentPos = { x: 3, y: 0 }; // 첫 블록을 화면 상단 중앙에 위치
+    currentTetromino = tetrominoes[Math.floor(Math.random() * tetrominoes.length)]; // 첫 블록 설정
     interval = setInterval(moveTetrominoDown, 500); // 500ms마다 블록을 한 칸씩 내려옴
+    drawTetromino();  // 첫 번째 블록을 보드에 그려줍니다.
 }
 
 // 게임 보드 그리기
@@ -49,8 +52,8 @@ function drawBoard() {
                 // children에서 해당 위치의 div를 찾고 색상 적용
                 children[row * cols + col].style.backgroundColor = currentTetromino.color;
             } else {
-                // 빈 칸은 기본 색상
-                children[row * cols + col].style.backgroundColor = '#f1f1f1';
+                // 빈 칸은 하늘색
+                children[row * cols + col].style.backgroundColor = '#87CEEB';
             }
         }
     }
@@ -70,13 +73,12 @@ function drawTetromino() {
     // board 배열을 순회하면서 색상 적용
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            // board 배열에 값이 1이면 해당 위치에 색상을 적용
             if (board[row][col] === 1) {
                 // children에서 해당 위치의 div를 찾고 색상 적용
                 children[row * cols + col].style.backgroundColor = currentTetromino.color;
             } else {
-                // 빈 칸은 기본 색상
-                children[row * cols + col].style.backgroundColor = '#f1f1f1';
+                // 빈 칸은 하늘색
+                children[row * cols + col].style.backgroundColor = '#87CEEB';
             }
         }
     }
@@ -85,10 +87,12 @@ function drawTetromino() {
 
 // 블록을 한 칸 내려주는 함수
 function moveTetrominoDown() {
-    currentPos.y++;
-    if (isCollision()) {
+    currentPos.y++; // y값 증가
+
+    // 충돌이 발생하면 고정하고 새 블록 생성
+    if (isCollision() || checkGameOver()) {
         fixTetromino();
-        currentPos = { x: 3, y: 0 }; // 블록을 다시 시작 위치로
+        currentPos = { x: 3, y: 0 }; // 블록을 다시 시작 위치로 초기화
         currentTetromino = tetrominoes[Math.floor(Math.random() * tetrominoes.length)]; // 새로운 블록 생성
     }
     drawTetromino(); // 블록 그리기
@@ -190,10 +194,15 @@ function rotateTetromino() {
 
 // 게임 오버 체크
 function checkGameOver() {
-    if (isCollision() && currentPos.y === 0) {
-        alert('Game Over');
-        clearInterval(interval); // 게임 중단
+    // 블록이 상단에 닿았을 때
+    for (let col = 0; col < currentTetromino.shape[0].length; col++) {
+        if (board[0][currentPos.x + col] === 1) {
+            alert("Game Over");
+            clearInterval(interval); // 게임 종료
+            return true;
+        }
     }
+    return false;
 }
 
 // 게임 보드의 div 생성
@@ -205,6 +214,7 @@ function initializeBoard() {
         for (let col = 0; col < cols; col++) {
             const block = document.createElement("div");
             block.classList.add("block");
+            block.style.backgroundColor = '#87CEEB';  // 초기 하늘색 배경
             boardElement.appendChild(block);
         }
     }
