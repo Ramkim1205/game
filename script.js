@@ -37,6 +37,20 @@ function startGame() {
     interval = setInterval(moveTetrominoDown, 500); // 500ms마다 블록을 한 칸씩 내려옴
 }
 
+// 게임 보드의 div 생성
+function initializeBoard() {
+    const boardElement = document.getElementById("board");
+    boardElement.innerHTML = ''; // 이전에 그린 보드 초기화
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const block = document.createElement("div");
+            block.classList.add("block");
+            boardElement.appendChild(block);
+        }
+    }
+}
+
 // 게임 보드 그리기
 function drawBoard() {
     const boardElement = document.getElementById("board");
@@ -72,15 +86,17 @@ function drawTetromino() {
     // board 배열을 순회하면서 색상 적용
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
+            // board 배열에 값이 1이면 해당 위치에 색상을 적용
             if (board[row][col] === 1) {
-                // 블록 색상 적용
+                // children에서 해당 위치의 div를 찾고 색상 적용
                 children[row * cols + col].style.backgroundColor = currentTetromino.color;
             } else {
-                children[row * cols + col].style.backgroundColor = '#f1f1f1'; // 빈 칸은 기본 색상
+                // 빈 칸은 기본 색상
+                children[row * cols + col].style.backgroundColor = '#f1f1f1';
             }
         }
     }
-    updateScore();
+    updateScore(); // 점수 업데이트
 }
 
 // 블록을 한 칸 내려주는 함수
