@@ -1,11 +1,11 @@
 // 테트로미노es 배열에서 각 블록에 color 추가
 const tetrominoes = [
-    { shape: [[1, 1, 1], [0, 1, 0]], color: 'blue' }, // T형 블록
+    { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' }, // T형 블록
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // O형 블록
     { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' }, // S형 블록
     { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' }, // Z형 블록
     { shape: [[1, 0, 0], [1, 1, 1]], color: 'orange' }, // L형 블록
-    { shape: [[0, 0, 1], [1, 1, 1]], color: 'cyan' }, // J형 블록
+    { shape: [[0, 0, 1], [1, 1, 1]], color: 'blue' }, // J형 블록
     { shape: [[1, 1, 1, 1]], color: 'purple' } // I형 블록
 ];
 
@@ -37,40 +37,24 @@ function startGame() {
     interval = setInterval(moveTetrominoDown, 500); // 500ms마다 블록을 한 칸씩 내려옴
 }
 
-// 게임 보드의 div 생성
-function initializeBoard() {
-    const boardElement = document.getElementById("board");
-    boardElement.innerHTML = ''; // 이전에 그린 보드 초기화
-
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const block = document.createElement("div");
-            block.classList.add("block");
-            boardElement.appendChild(block);
-        }
-    }
-}
-
 // 게임 보드 그리기
 function drawBoard() {
     const boardElement = document.getElementById("board");
-    boardElement.innerHTML = ''; // 이전에 그린 보드 비우기
+    let children = boardElement.children;
+
+    // board 배열을 순회하면서 색상 적용
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            const block = document.createElement("div");
-            block.classList.add("block");
-
-            // board 배열에서 1이면 색상 적용
             if (board[row][col] === 1) {
-                // 현재 블록의 색상 적용
-                block.style.backgroundColor = currentTetromino.color;
+                // children에서 해당 위치의 div를 찾고 색상 적용
+                children[row * cols + col].style.backgroundColor = currentTetromino.color;
+            } else {
+                // 빈 칸은 기본 색상
+                children[row * cols + col].style.backgroundColor = '#f1f1f1';
             }
-
-            // boardElement에 블록 추가
-            boardElement.appendChild(block);
         }
     }
-    updateScore();
+    updateScore(); // 점수 업데이트
 }
 
 // 점수 업데이트
@@ -155,17 +139,6 @@ function fixTetromino() {
 function clearFullLines() {
     for (let row = rows - 1; row >= 0; row--) {
         if (board[row].every(cell => cell === 1)) {
-            board.splice(row, 1); // 줄 삭제
-            board.unshift(Array(cols).fill(0)); // 맨 위에 빈 줄 추가
-            score += 10; // 점수 증가
-        }
-    }
-    drawBoard();
-}
-
-function clearFullLines() {
-    for (let row = rows - 1; row >= 0; row--) {
-        if (board[row].every(cell => cell === 1)) {
             // 가득 찬 줄 삭제
             board.splice(row, 1);
             board.unshift(Array(cols).fill(0)); // 맨 위에 빈 줄 추가
@@ -222,3 +195,20 @@ function checkGameOver() {
         clearInterval(interval); // 게임 중단
     }
 }
+
+// 게임 보드의 div 생성
+function initializeBoard() {
+    const boardElement = document.getElementById("board");
+    boardElement.innerHTML = ''; // 이전에 그린 보드 초기화
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const block = document.createElement("div");
+            block.classList.add("block");
+            boardElement.appendChild(block);
+        }
+    }
+}
+
+// 게임 시작 시 초기화 함수 호출
+initializeBoard();  // 보드의 div 요소를 미리 생성
