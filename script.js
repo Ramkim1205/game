@@ -1,62 +1,38 @@
+let gameStarted = false;
+let score = 0;
+let interval;
+
 document.getElementById('start-button').addEventListener('click', () => {
-    alert('Game Started!');
+    if (!gameStarted) {
+        gameStarted = true;
+        alert('Game Started!');
+        startGame();
+    }
 });
 
-const rows = 20;
-const cols = 10;
-let board = Array.from({ length: rows }, () => Array(cols).fill(0)); // 0: 비어있음, 1: 블록 있음
+function startGame() {
+    interval = setInterval(moveTetrominoDown, 500);
+}
 
-// 게임 보드 그리기
 function drawBoard() {
     const boardElement = document.getElementById("board");
-    boardElement.innerHTML = ''; // 이전에 그린 보드 비우기
+    boardElement.innerHTML = '';
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             const block = document.createElement("div");
             block.classList.add("block");
             if (board[row][col] === 1) {
-                block.style.backgroundColor = 'blue'; // 블록이 있으면 파란색으로 표시
+                block.style.backgroundColor = 'blue';
             }
             boardElement.appendChild(block);
         }
     }
+    updateScore();
 }
-
-// 초기화
-drawBoard();
-
-const tetrominoes = [
-    [[1, 1, 1], [0, 1, 0]], // T형 블록
-    [[1, 1], [1, 1]], // O형 블록
-    [[1, 1, 0], [0, 1, 1]], // S형 블록
-    [[0, 1, 1], [1, 1, 0]], // Z형 블록
-    [[1, 0, 0], [1, 1, 1]], // L형 블록
-    [[0, 0, 1], [1, 1, 1]], // J형 블록
-    [[1, 1, 1, 1]] // I형 블록
-];
-
-// 새로운 블록 생성
-let currentTetromino = tetrominoes[0]; // 기본적으로 T형 블록
-let currentPos = { x: 3, y: 0 }; // 블록이 시작되는 위치
-
-function drawTetromino() {
-    for (let row = 0; row < currentTetromino.length; row++) {
-        for (let col = 0; col < currentTetromino[row].length; col++) {
-            if (currentTetromino[row][col] === 1) {
-                board[currentPos.y + row][currentPos.x + col] = 1;
-            }
-        }
-    }
-    drawBoard();
-}
-
-// 초기 테트로미노 그리기
-drawTetromino();
 
 function moveTetrominoDown() {
     currentPos.y++;
     if (isCollision()) {
-        // 충돌시, 블록을 고정하고 새로운 블록을 생성
         fixTetromino();
         currentPos = { x: 3, y: 0 };
         currentTetromino = tetrominoes[Math.floor(Math.random() * tetrominoes.length)];
@@ -64,7 +40,42 @@ function moveTetrominoDown() {
     drawTetromino();
 }
 
-// 충돌 체크
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+        moveTetrominoLeft();
+    } else if (event.key === 'ArrowRight') {
+        moveTetrominoRight();
+    } else if (event.key === 'ArrowUp') {
+        rotateTetromino();
+    } else if (event.key === 'ArrowDown') {
+        moveTetrominoDown();
+    }
+});
+
+function moveTetrominoLeft() {
+    currentPos.x--;
+    if (isCollision()) currentPos.x++;
+    drawTetromino();
+}
+
+function moveTetrominoRight() {
+    currentPos.x++;
+    if (isCollision()) currentPos.x--;
+    drawTetromino();
+}
+
+function rotateTetromino() {
+    const rotatedTetromino = currentTetromino[0].map((_, index) =>
+        currentTetromino.map(row => row[index])
+    ).reverse();
+
+    currentTetromino = rotatedTetromino;
+    if (isCollision()) {
+        currentTetromino = rotatedTetromino.reverse();
+    }
+    drawTetromino();
+}
+
 function isCollision() {
     for (let row = 0; row < currentTetromino.length; row++) {
         for (let col = 0; col < currentTetromino[row].length; col++) {
@@ -91,36 +102,27 @@ function fixTetromino() {
             }
         }
     }
-    // 줄 삭제 처리 (추가 필요)
-}
-
-setInterval(moveTetrominoDown, 500); // 500ms마다 블록을 한 칸씩 내려옴
-
-function rotateTetromino() {
-    const rotatedTetromino = currentTetromino[0].map((_, index) =>
-        currentTetromino.map(row => row[index])
-    ).reverse();
-
-    currentTetromino = rotatedTetromino;
-    if (isCollision()) {
-        currentTetromino = rotatedTetromino.reverse(); // 회전 불가하면 원래 모양으로 되돌림
-    }
-    drawTetromino();
+    clearFullLines();
 }
 
 function clearFullLines() {
     for (let row = rows - 1; row >= 0; row--) {
         if (board[row].every(cell => cell === 1)) {
-            board.splice(row, 1); // 줄 삭제
-            board.unshift(Array(cols).fill(0)); // 맨 위에 빈 줄 추가
+            board.splice(row, 1);
+            board.unshift(Array(cols).fill(0));
+            score += 10;
         }
     }
     drawBoard();
 }
 
+function updateScore() {
+    document.getElementById('score').innerText = `Score: ${score}`;
+}
+
 function checkGameOver() {
-    if (isCollision()) {
+    if (isCollision() && currentPos.y === 0) {
         alert('Game Over');
-        clearInterval(interval); // 게임 중단
+        clearInterval(interval);
     }
 }
