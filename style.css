@@ -1,0 +1,34 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(8, 50px); /* 8개의 열 */
+    grid-template-rows: repeat(8, 50px);    /* 8개의 행 */
+    gap: 5px;
+    margin: 20px auto;
+    width: 440px;
+    height: 440px;
+    background-color: #f0f0f0;
+}
+
+.tile {
+    width: 50px;
+    height: 50px;
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    border: 1px solid #ddd;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
