@@ -1,3 +1,4 @@
+// 테트로미노es 배열에서 각 블록에 color 추가
 const tetrominoes = [
     { shape: [[1, 1, 1], [0, 1, 0]], color: 'blue' }, // T형 블록
     { shape: [[1, 1], [1, 1]], color: 'yellow' }, // O형 블록
@@ -8,7 +9,7 @@ const tetrominoes = [
     { shape: [[1, 1, 1, 1]], color: 'purple' } // I형 블록
 ];
 
-// 초기화
+// 게임 상태 초기화
 let currentPos = { x: 3, y: 0 }; // 블록이 시작되는 위치
 let currentTetromino = tetrominoes[0]; // 기본적으로 T형 블록
 
@@ -44,9 +45,14 @@ function drawBoard() {
         for (let col = 0; col < cols; col++) {
             const block = document.createElement("div");
             block.classList.add("block");
+
+            // board 배열에서 1이면 색상 적용
             if (board[row][col] === 1) {
-                block.style.backgroundColor = 'blue'; // 기본 색상
+                // 현재 블록의 색상 적용
+                block.style.backgroundColor = currentTetromino.color;
             }
+
+            // boardElement에 블록 추가
             boardElement.appendChild(block);
         }
     }
@@ -60,29 +66,14 @@ function updateScore() {
 
 // 테트로미노 그리기
 function drawTetromino() {
-    // 기존 board를 모두 비웁니다
-    const boardElement = document.getElementById("board");
-    boardElement.innerHTML = ''; // 이전에 그린 보드를 지웁니다
-
-    // board 배열을 참조하면서 각 블록에 색상을 적용합니다
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const block = document.createElement("div");
-            block.classList.add("block");
-
-            // board 배열에서 1이면 색상 적용
-            if (board[row][col] === 1) {
-                // 현재 블록의 색상 적용
-                block.style.backgroundColor = currentTetromino.color;
+    for (let row = 0; row < currentTetromino.shape.length; row++) {
+        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
+            if (currentTetromino.shape[row][col] === 1) {
+                board[currentPos.y + row][currentPos.x + col] = 1;
             }
-
-            // boardElement에 블록 추가
-            boardElement.appendChild(block);
         }
     }
-
-    // 점수 업데이트 및 게임 상태 다시 그리기
-    updateScore();
+    drawBoard(); // 보드 그리기
 }
 
 // 블록을 한 칸 내려주는 함수
@@ -120,7 +111,10 @@ function fixTetromino() {
     for (let row = 0; row < currentTetromino.shape.length; row++) {
         for (let col = 0; col < currentTetromino.shape[row].length; col++) {
             if (currentTetromino.shape[row][col] === 1) {
-                board[currentPos.y + row][currentPos.x + col] = 1;
+                // 현재 블록이 보드의 범위 내에 있는지 확인
+                if (currentPos.y + row < rows && currentPos.x + col >= 0 && currentPos.x + col < cols) {
+                    board[currentPos.y + row][currentPos.x + col] = 1;
+                }
             }
         }
     }
