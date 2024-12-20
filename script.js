@@ -66,20 +66,14 @@ function updateScore() {
 
 // 테트로미노 그리기
 function drawTetromino() {
-    for (let row = 0; row < currentTetromino.shape.length; row++) {
-        for (let col = 0; col < currentTetromino.shape[row].length; col++) {
-            if (currentTetromino.shape[row][col] === 1) {
-                board[currentPos.y + row][currentPos.x + col] = 1;
-            }
-        }
-    }
-
-    // 보드에 고정된 블록 색상 적용
     const boardElement = document.getElementById("board");
     let children = boardElement.children;
+
+    // board 배열을 순회하면서 색상 적용
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             if (board[row][col] === 1) {
+                // 블록 색상 적용
                 children[row * cols + col].style.backgroundColor = currentTetromino.color;
             } else {
                 children[row * cols + col].style.backgroundColor = '#f1f1f1'; // 빈 칸은 기본 색상
@@ -121,17 +115,24 @@ function isCollision() {
 
 // 블록 고정 함수
 function fixTetromino() {
-    // 블록 고정
+    // 블록을 board 배열에 고정
     for (let row = 0; row < currentTetromino.shape.length; row++) {
         for (let col = 0; col < currentTetromino.shape[row].length; col++) {
             if (currentTetromino.shape[row][col] === 1) {
-                board[currentPos.y + row][currentPos.x + col] = 1;
+                // 유효한 위치에만 블록을 고정
+                if (currentPos.y + row >= 0 && currentPos.y + row < rows && currentPos.x + col >= 0 && currentPos.x + col < cols) {
+                    board[currentPos.y + row][currentPos.x + col] = 1;
+                }
             }
         }
     }
-    clearFullLines(); // 가득 찬 줄 삭제
-    currentTetromino = tetrominoes[Math.floor(Math.random() * tetrominoes.length)]; // 새 블록 생성
-    currentPos = { x: 3, y: 0 }; // 블록 초기 위치
+
+    // 새 테트로미노 생성
+    currentTetromino = tetrominoes[Math.floor(Math.random() * tetrominoes.length)];
+    currentPos = { x: 3, y: 0 }; // 블록 위치 초기화
+
+    // 가득 찬 줄 삭제
+    clearFullLines();
 }
 
 // 줄 삭제 처리
@@ -144,6 +145,18 @@ function clearFullLines() {
         }
     }
     drawBoard();
+}
+
+function clearFullLines() {
+    for (let row = rows - 1; row >= 0; row--) {
+        if (board[row].every(cell => cell === 1)) {
+            // 가득 찬 줄 삭제
+            board.splice(row, 1);
+            board.unshift(Array(cols).fill(0)); // 맨 위에 빈 줄 추가
+            score += 10; // 점수 증가
+        }
+    }
+    drawTetromino(); // 화면 업데이트
 }
 
 // 키 입력 처리
