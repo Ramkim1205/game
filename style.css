@@ -4,7 +4,11 @@ body {
 }
 #game {
     margin: 20px auto;
+    width: 320px;  /* 화면에 맞게 설정 */
+    height: 640px; /* 화면에 맞게 설정 */
+    text-align: center;
 }
+
 #board {
     display: grid;
     grid-template-columns: repeat(10, 30px);
@@ -12,9 +16,12 @@ body {
     gap: 1px;
     background-color: #f1f1f1;
     border: 2px solid #000;
+    width: 300px;
+    height: 600px;
 }
+
 .block {
     width: 30px;
     height: 30px;
-    background-color: lightblue;
+    background-color: lightblue;  /* 기본 블록 색상 */
 }
