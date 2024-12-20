@@ -49,7 +49,7 @@ function drawBoard() {
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             if (board[row][col] === 1) {
-                // children에서 해당 위치의 div를 찾고 색상 적용
+                // 블록이 있는 곳은 그 고유 색상으로 표시
                 children[row * cols + col].style.backgroundColor = currentTetromino.color;
             } else {
                 // 빈 칸은 하늘색
